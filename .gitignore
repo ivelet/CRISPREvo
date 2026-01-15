@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+venv/
+env/
+__pycache__/
+
+# Build outputs
+dist/
+build/
+*.pyc
+*.class
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+*.json
+
+dev
+crispr-datasets/*
+crispr_evo
