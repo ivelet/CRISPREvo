@@ -1,5 +1,13 @@
 # CRIPSR-Evo: Biological Foundation Model for CRISPR Array Detection
 
+Accurate identification of CRISPR arrays is essential for studying prokaryotic adaptive immunity, yet existing tools struggle with short-read sequencing data and arrays containing degenerate repeats. These limitations restrict CRISPR analysis in metagenomic and fragmented genomic datasets.
+
+We present a foundation model-based approach for CRISPR array detection that addresses both challenges. We adapt a genomic foundation model using parameter-efficient fine-tuning with Low-Rank Adaptation (LoRA) to perform per-nucleotide classification of DNA sequences into repeat, spacer, and non-array regions directly from raw nucleotide input.
+
+We develop two model variants for different sequencing regimes. A long-context model supporting sequences of up to 8,192 nucleotides achieves 98.16% test accuracy and identifies degenerate repeat candidates missed by similarity-based CRISPR detection tools, with 92.5\% of candidates aligning significantly to their array consensus repeats. A short-context 150-nucleotide model optimized for Illumina reads reaches 90.03% accuracy and enables direct analysis of individual reads without assembly. On simulated metagenomic data, it achieves a spacer recall of 49.12% and recovers 12.57% of spacers not detected by a dedicated metagenomic CRISPR array detection method.
+
+Together, these results demonstrate that genomic foundation models provide a robust and complementary paradigm for CRISPR array detection.
+
 ## Table of contents
 * [Installation and Environment](#installation)
 * [Download and Prepare Data](#prepare-data)
