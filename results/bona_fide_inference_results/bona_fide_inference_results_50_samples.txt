@@ -1,13 +1,13 @@
 eval_loss: 0.13506287336349487
-eval_model_preparation_time: 0.0159
+eval_model_preparation_time: 0.0168
 eval_accuracy: 0.9669647320188837
 eval_mcc: 0.9492885355707408
 eval_precision: 0.9612147280009046
 eval_recall: 0.9652773485502184
 eval_f1: 0.9631386072904364
-eval_runtime: 30.3441
-eval_samples_per_second: 1.648
-eval_steps_per_second: 1.648
+eval_runtime: 29.1127
+eval_samples_per_second: 1.717
+eval_steps_per_second: 1.717
 
 Accession number:	CP017638
 Start position:		1262534

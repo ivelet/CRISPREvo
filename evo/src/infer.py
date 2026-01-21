@@ -75,7 +75,9 @@ if __name__ == "__main__":
     metrics = trainer.evaluate()
 
     # Save results to a file
-    output_path = f"{ROOT_DIR}/results/metagenomic_inference"
+    output_dir = f"{ROOT_DIR}/results/bona_fide_inference_results"
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    output_path = f"{output_dir}/bona_fide_inference_results_{num_samples}_samples.txt"
 
     with open(output_path, "w") as file:
       # For each metric in the metrics dictionary, write the metric name and value
