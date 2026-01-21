@@ -117,9 +117,9 @@ if __name__ == "__main__":
     metrics = trainer.evaluate()
 
     # Save results to a file
-    output_path = f"{ROOT_DIR}/results/test_eval"
+    output_path = f"{ROOT_DIR}/results/bona_fide_inference_results"
     os.makedirs(output_path, exist_ok=True)
-    output_path += ".txt"
+    output_path = f"{output_path}/bona_fide_evaluation_results.txt"
 
     with open(output_path, "w") as f:
         # For each metric in the metrics dictionary, write the metric name and value to the file

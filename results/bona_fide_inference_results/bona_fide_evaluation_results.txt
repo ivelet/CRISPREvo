@@ -1,0 +1,10 @@
+eval_loss: 0.10185519605875015
+eval_model_preparation_time: 0.0171
+eval_accuracy: 0.9814956111105039
+eval_mcc: 0.9716834698746107
+eval_precision: 0.981284176495905
+eval_recall: 0.9788962874392632
+eval_f1: 0.9800512178109696
+eval_runtime: 535.1758
+eval_samples_per_second: 1.898
+eval_steps_per_second: 1.898
