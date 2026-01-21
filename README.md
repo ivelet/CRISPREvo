@@ -88,6 +88,6 @@ python3 evo/src/eval_metrics.py $1
 CRISPREvo can perform metagenomic analysis without the need for assembly. After downloading the fine-tuned model or fine-tuning it from scratch, run the following to infer the model on simulated metagenomic reads. Note that there are 10 million sequences in total which can take a long time to run. You may specify the number of sequences to randomly sample from this dataset as done below to run inference on 100,000 randomly selected sequences.
 
 ```bash
-python3 evo/src/pred_meta_sim_small_reads.py
+python3 evo/src/pred_meta_sim_small_reads.py --num_samples 100000
 ```
 

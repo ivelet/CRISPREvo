@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 parser = ArgumentParser(description="Evaluate a multi-class token classification model.")
-parser.add_argument("--model_id", type=str, default="crispr_evo",
+parser.add_argument("--model_name", type=str, default="crispr_evo",
                     help="Model ID of a 150 target length model to infer with.")
 parser.add_argument("--batch_size", type=int, default=128,
                     help="Batch size for evaluation.")
@@ -62,7 +62,9 @@ model.eval()
 model.to("cuda")
 model.backbone_model.config.model_type = "mpt"
 
-output_path = f"{ROOT_DIR}/results/metagenomic_inference/infer_meta_{args.num_samples}.txt"
+output_dir = f"{ROOT_DIR}/results/metagenomic_inference"
+Path(output_dir).mkdir(parents=True, exist_ok=True)
+output_path = f"{output_dir}/infer_meta_{args.num_samples}.txt"
 
 # Predict and save
 with open(output_path, "w") as file:
