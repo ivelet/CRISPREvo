@@ -30,7 +30,6 @@ if __name__ == "__main__":
         "logging_steps": 10,
         "lr_scheduler_type": "cosine",
         "max_seq_length": 8000,
-        # "max_steps": 500,
         "num_train_epochs": 3,
         "model_name": "togethercomputer/evo-1-8k-base",
         "per_device_eval_batch_size": 2,
@@ -61,9 +60,6 @@ if __name__ == "__main__":
         "seed": 42,
         "SLURM_JOB_ID": slurm_job_id
     }
-
-    # Initialize a new wandb run
-    # wandb.init(project="crispr-evo", config=hyperparameters)
 
     lora_config = LoraConfig(
         task_type=hyperparameters["lora_task_type"],

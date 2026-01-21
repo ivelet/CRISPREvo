@@ -39,3 +39,4 @@ wandb/
 data
 results/metagenomic_inference/infer_meta_-1.txt
 *.arrow
+data_dev

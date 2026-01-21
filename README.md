@@ -26,7 +26,7 @@ Together, these results demonstrate that genomic foundation models provide a rob
 ## Installation and Environment
 Note that Evo requires flash-attn, which must be installed on an Ampere, Ada, or Hopper GPU (e.g., A100, RTX 3090, RTX 4090, H100).
 Also, due to known issues with the installation of Flash Attention, it is recommended to install PyTorch and Flash Attention first before other packages in the environment.
-If there are issues installing the pip packages when setting up the conda environment from environemnt.yml, activate the conda environment and then install them separately using pip while inside the environment.
+If there are issues installing the pip packages when setting up the conda environment from `environment/environment.yml`, activate the conda environment and then install them separately using pip while inside the environment.
 ```bash
 conda env create -f environment/environment.yml
 conda activate crispr-evo
