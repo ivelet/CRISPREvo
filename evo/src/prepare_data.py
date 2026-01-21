@@ -1,113 +1,103 @@
-# Create the dataset for the evo project
+# Create the binary head dataset for the evo project
 
 from itertools import zip_longest
 import datasets
+import numpy as np
 import torch
 from transformers import AutoTokenizer
+from pathlib import Path
 
 # Load in the updated_crispr_cas csv datafile into a datasets object
-dataset = datasets.load_dataset('csv', data_files='/work/dlclarge2/koeksalr-crispr/crispr-datasets/updated_crispr_cas.csv')
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+# dataset = datasets.load_dataset('csv', data_files=f'{ROOT_DIR}/crispr-datasets/output_crispr_data.csv')
+dataset = datasets.load_dataset('csv', data_files=f'{ROOT_DIR}/crispr-datasets/simulated_reads_meta.csv')
 
-# Print out number of rows in the dataset
-print(f"Number of rows in the dataset (Bona-fide, Possible): {len(dataset['train'])}")
+# Filter out the sequences that are not bona fide
+dataset = dataset.filter(lambda x: x['category'] == 'Bona-fide')
 
-# Define the maximun length
-max_length = 8000
+# Rename mask column to labels
+dataset = dataset.rename_column('mask', 'labels')
 
-# Create two new columns in the dataset object containing the input sequence and the corresponding output
-def create_seq_and_output(row, max_length=max_length):
-    seq = ''
-    output = ''
+# Rename acc_num to acc_number
+dataset = dataset.rename_column('acc_num', 'acc_number')
 
-    # Check if the sequence has a cassette
-    start = row["cas_cas_start"]
-    end = row["cas_cas_end"]
-    if start is not None and end is not None:
-        start = int(start)
-        end = int(end)
+# Create a sequence and label column with the sequence and a list of 0s and 1s denoting the repeat and spacer nucleotides, respectively.
+def calc_seq_and_labels(row):
+    """
+    Calculate the sequence and repeat spacer sequence
+    :param row: row of the dataset object
+    :return: a tuple containing the sequence and repeat spacer sequence (label)
+    """
+    labels = row["labels"]
+    seq = row["sequence"]
+
+    # Determine the amount of leading 2's in the labels
+    leading_twos = len(labels) - len(labels.lstrip('2'))
+
+    # Determine the amount of trailing 2's in the labels
+    trailing_twos = len(labels) - len(labels.rstrip('2'))
+
+    # Take a random number between 0 and the minimum of the leading_twos and 500
+    if leading_twos == 0:
+      extra_leading_nt = 0
+    else:
+      extra_leading_nt = torch.randint(0, min(leading_twos, 501), (1,)).item()
+
+    # Take a random number between 0 and the minimum of the trailing_twos and 500
+    if trailing_twos == 0:
+      extra_trailing_nt = 0
+    else: 
+      extra_trailing_nt = torch.randint(0, min(trailing_twos, 501), (1,)).item()
+
+    # Calculate the start position using the extra_leading_nt
+    start = leading_twos - extra_leading_nt
+
+    # Calculate the end position using the extra_trailing_nt
+    end =  len(labels) - (trailing_twos - extra_trailing_nt)
+
+    # Extract the sequence using the start and end positions
+    seq = seq[start:end]
+
+    # Extract the labels using the start and end positions
+    labels = labels[start:end]
+
+    # Convert the labels to a list of integers
+    labels = [int(label) for label in labels]
         
-        # Open the fasta file containing the cassette sequence
-        fasta_file = f'/work/dlclarge2/koeksalr-crispr/crispr-datasets/bona_fide_sequences/{row["acc_number"]}.fasta'
-        try: 
-            with open(fasta_file, 'r') as f:
-                record = f.read()
-
-            # Extract the cassette sequence
-            # Find the first newline character and take sequence from the next character
-            record = record[record.find('\n')+1:]
-            # Delete all newline characters
-            record = record.replace('\n', '')
-            # Extract the cassette sequence
-            seq += record[start:end]
-            output += '!' * len(seq)
-
-        except Exception as e:
-            print(f"Error while processing file: {fasta_file}")
-            raise e
-
-    # Divide the strings into lists
-    repeats = row["repeat_sequences"].split(' ')
-    spacers = row["spacer_sequences"].split(' ')
-
-    # Create the sequence and output
-    for i in range(len(repeats)):
-        # Add the start position of the repeat to the output
-        output += '-' * len(repeats[i])
-
-        # Add the repeat sequence to the sequence
-        seq += repeats[i]
-
-        # If we have reached the last repeat there is no spacer following it
-        if i >= len(spacers):
-            break
-
-        # Add the start position of the spacer to the labels
-        output += '+' * len(spacers[i])
-
-        # Add the spacer sequence to the sequence
-        seq += spacers[i]
-
-    # If the sequence is longer than the maximum length, truncate it
-    if len(seq) > max_length:
-        seq = seq[:max_length]
-        output = output[:max_length]
-        
-    # Add the sequence and the output to the row (stored as labels, since the trainer expects that name)
-    return {'sequence': seq + '|' + output}
+    return {'sequence': seq, 'labels': labels}
 
 # Apply the function to the dataset object
-dataset = dataset.map(create_seq_and_output)
+dataset = dataset.map(calc_seq_and_labels)
 
+# Keep only the sequence and label columns
+dataset = dataset.select_columns(['acc_number', 'start', 'end','sequence', 'labels'])
 
-# Keep the sequence column
-dataset = dataset.select_columns('sequence')
-
-# Tokenize the sequences using the Evo model
 model_name = 'togethercomputer/evo-1-8k-base'
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-tokenizer.pad_token = 'X'
-tokenizer.sep_token = '|'
+tokenizer.pad_token = "X"
 
-def tokenize_data(sample, max_length=max_length):
+def tokenize_data(sample, max_length=8000):
     tokenized = tokenizer(sample['sequence'], padding="max_length", truncation=True, max_length=max_length, return_tensors='pt')
+    labels = sample['labels']
+    # Pad or truncate orf_labels to match the tokenized sequence length
+    if len(labels) < max_length:
+        labels += [-100] * (max_length - len(labels))
+    else:
+        labels = labels[:max_length]
+
+    tokenized['labels'] = torch.tensor(labels, dtype=torch.long)
 
     # Remove batch dimension added by tokenizer
     for key in tokenized:
         tokenized[key] = tokenized[key].squeeze(0)
 
-    # Add labels which are the tokenized input_ids
-    tokenized['labels'] = tokenized['input_ids'].clone()
-
     return tokenized
 
 # Tokenize the dataset
-dataset = dataset.map(tokenize_data, batched=False, num_proc=12)
+dataset = dataset.map(tokenize_data)
 
-# Create a 75-10-15 train-validation-test split, then remove overlapping sequences between the train, validation, and test sets trying to land on a 70-10-20 split
-# Perform the first split (75-15 train-test split)
-train_validtest = dataset["train"].train_test_split(test_size=0.25, seed=42)
-# Split the validation+test set into a validation and test set (60-15 validation-test split)
-valid_test = train_validtest["test"].train_test_split(test_size=0.55, seed=42)
+train_validtest = dataset["train"].train_test_split(test_size=0.30, seed=42)
+valid_test = train_validtest["test"].train_test_split(test_size=2/3, seed=42)
 # Assign the final datasets
 dataset = datasets.DatasetDict({
     "train": train_validtest["train"],
@@ -176,4 +166,5 @@ print(f"Number of sequences in the validation set after removing overlapping seq
 print(f"Number of sequences in the test set after removing overlapping sequences: {len(dataset['test'])} ({test_percentage:.2f}%)\n")
 
 # Save the dataset as a datasets object
-dataset.save_to_disk('/work/dlclarge2/koeksalr-crispr/crispr-datasets')
+dataset.save_to_disk(f'{ROOT_DIR}/data/simulated_reads_meta')
+dataset.save_to_disk(f'{ROOT_DIR}/data/updated_crispr_cas_bona_fide.csv')

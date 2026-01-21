@@ -14,6 +14,8 @@ build/
 .vscode/
 .idea/
 *.swp
+.cache/
+.tmp/
 
 # OS files
 .DS_Store
@@ -27,7 +29,11 @@ Thumbs.db
 *.log
 logs/
 *.json
+*.zip
 
 dev
 crispr-datasets/*
 crispr_evo
+NCBI-Download
+wandb/
+data
