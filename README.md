@@ -36,18 +36,19 @@ pip install -r environment/requirements.txt
 ## Download and Prepare Data
 
 ### Download all datasets
+Download and unzip all the datasets needed for fine-tuning and to reproduce the experiments and results from the manuscript from the root directory.
 ```bash 
-wget
-unzip data
+bash evo/scripts/download_all_data.sh
 ```
 
-### Download fine-tuned model
+<!-- ### Download fine-tuned model
 To save time, you may use the following to download the fine-tuned model used in the manuscript to avoid fine-tuning an Evo model from scratch.
 ```bash
 wget 
 unzip models
-```
+``` -->
 ### Prepare all data
+After downloading all the raw datasets, run the following to pre-process and prepare all data for experiments.
 ```bash 
 python3 evo/src/prepare_data.py
 ```
@@ -64,20 +65,23 @@ bash evo/scripts/reproduce_inference_results.sh
 To reproduce all results from scratch including fine-tuning, run the following:
 
 ```bash 
-bash evo/scripts/reproduce_all_results.sh -->
-```
+bash evo/scripts/reproduce_all_results.sh
+``` -->
 
 ## CRISPR Cas Bona Fide Array Prediction
 
 ### Train (fine-tune) Evo on CRISPR array data
-Use the following to download a pre-trained Evo model and then fine-tune it using LoRA on bona-fide sequences. Note that this was done on a single H200 GPU for >3 hours. To skip this step and save time on fine-tuning, you may run inference on the fine-tuned model downloaded.
+Use the following to download a pre-trained Evo model and then fine-tune it using LoRA on bona-fide sequences. Note that this was done on a single H200 GPU for >3 hours. To skip this step and save time on fine-tuning, you may skip this step and use the fine-tuned model saved in `models/crispr_evo`.
 ```bash 
 python3 evo/src/multi/train.py
 ```
 ### Predict CRISPR arryas
-Run inference on the fine-tuned CRISPREvo model and evaluate the results on the bona-fide test sequences
+Run inference on the fine-tuned CRISPREvo model on the bona-fide test sequences
 ```bash 
 python3 evo/src/multi/infer.py $1 $2
+```
+### Evaluate the results on the bona-fide test sequences to get the performance metrics
+```bash
 python3 evo/src/multi/eval_metrics.py $1
 ```
 ## Metagenomic Analysis 
