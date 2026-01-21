@@ -37,3 +37,5 @@ crispr_evo
 NCBI-Download
 wandb/
 data
+results/metagenomic_inference/infer_meta_-1.txt
+*.arrow
