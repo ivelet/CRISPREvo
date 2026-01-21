@@ -73,16 +73,16 @@ bash evo/scripts/reproduce_all_results.sh
 ### Train (fine-tune) Evo on CRISPR array data
 Use the following to download a pre-trained Evo model and then fine-tune it using LoRA on bona-fide sequences. Note that this was done on a single H200 GPU for >3 hours. To skip this step and save time on fine-tuning, you may skip this step and use the fine-tuned model saved in `models/crispr_evo`.
 ```bash 
-python3 evo/src/multi/train.py
+python3 evo/src/train.py
 ```
 ### Predict CRISPR arryas
 Run inference on the fine-tuned CRISPREvo model on the bona-fide test sequences
 ```bash 
-python3 evo/src/multi/infer.py $1 $2
+python3 evo/src/infer.py $1 $2
 ```
 ### Evaluate the results on the bona-fide test sequences to get the performance metrics
 ```bash
-python3 evo/src/multi/eval_metrics.py $1
+python3 evo/src/eval_metrics.py $1
 ```
 ## Metagenomic Analysis 
 CRISPREvo can perform metagenomic analysis without the need for assembly. After downloading the fine-tuned model or fine-tuning it from scratch, run the following to infer the model on simulated metagenomic reads. Note that there are 10 million sequences in total which can take a long time to run. You may specify the number of sequences to randomly sample from this dataset as done below to run inference on 100,000 randomly selected sequences.

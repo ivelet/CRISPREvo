@@ -15,12 +15,12 @@ if __name__ == "__main__":
     slurm_job_id = os.environ.get("SLURM_JOB_ID", None)
 
     ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-    DATA_DIR = os.path.join(ROOT_DIR, "crispr-datasets/evo")
+    DATA_DIR = os.path.join(ROOT_DIR, "data")
 
     # Define hyperparameters
     hyperparameters = {
         # Tuning parameters
-        "data_dir": os.path.join(DATA_DIR, "multi_data_only_bona_fide"),
+        "data_dir": os.path.join(DATA_DIR, "bona_fide"),
         "eval_steps": 1,
         "eval_strategy": "epoch",
         "do_eval": False,
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     model.backbone_model.config.model_type = "stripedhyena"
     
     # Save the model
-    model.save_pretrained(f"{ROOT_DIR}/results/multi/crispr_evo")
+    model.save_pretrained(f"{ROOT_DIR}/results/bona_fide_infer")
 
     # Finish the wandb run
     wandb.finish()
