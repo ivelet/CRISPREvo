@@ -1,4 +1,4 @@
-# CRIPSR-Evo: Biological Foundation Model for CRISPR Array Detection Without Metagenomic Assembly
+# CRIPSR-Evo: Biological Foundation Models Enable CRISPR Array Detection Without Metagenomic Assembly
 
 Accurate identification of CRISPR arrays is essential for studying prokaryotic adaptive immunity, yet existing tools struggle with short-read sequencing
 data and arrays containing degenerate repeats. These limitations restrict CRISPR analysis in metagenomic and fragmented genomic datasets. We
